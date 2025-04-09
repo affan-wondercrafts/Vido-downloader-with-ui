@@ -31,75 +31,6 @@ export default function DownloadPage() {
 
 	const [progress, setProgress] = useState<DownloadProgress | null>(null);
 	const [error, setError] = useState<string | null>(null);
-
-	// useEffect(() => {
-	// 	if (!url || !formatId) {
-	// 		router.push('/');
-	// 		return;
-	// 	}
-
-	// 	// let eventSource: EventSource;
-
-	// 	const startDownload = async () => {
-	// 		try {
-	// 			const response = await fetch('/api/download', {
-	// 				method: 'POST',
-	// 				headers: {
-	// 					'Content-Type': 'application/json',
-	// 				},
-	// 				body: JSON.stringify({ url, formatId, isAudioOnly }),
-	// 			});
-
-	// 			if (!response.ok && response.status !== 200) {
-	// 				const error = await response.json();
-	// 				throw new Error(error.message || 'Failed to start download');
-	// 			}
-
-	// 			const reader = response.body?.getReader();
-	// 			const decoder = new TextDecoder();
-
-	// 			if (!reader) {
-	// 				throw new Error('Failed to read response');
-	// 			}
-
-	// 			while (true) {
-	// 				const { done, value } = await reader.read();
-	// 				console.log('value', value);
-	// 				console.log('done', done);
-	// 				if (done) {
-	// 					break;
-	// 				}
-
-	// 				const text = decoder.decode(value);
-	// 				console.log('decoded text', text);
-	// 				const lines = text.split('\n\n');
-
-	// 				for (const line of lines) {
-	// 					if (line.startsWith('data: ')) {
-	// 						try {
-	// 							const data = JSON.parse(line.substring(6));
-	// 							setProgress(data);
-
-	// 							if (data.status === 'error') {
-	// 								setError(data.message || 'Download failed');
-	// 							}
-	// 						} catch (e) {
-	// 							console.error('Failed to parse event data:', e);
-	// 						}
-	// 					}
-	// 				}
-	// 			}
-	// 		} catch (err) {
-	// 			console.error('Error starting download:', err);
-	// 			setError(
-	// 				err instanceof Error ? err.message : 'Failed to start download',
-	// 			);
-	// 		}
-	// 	};
-
-	// 	startDownload();
-	// }, [url, formatId, isAudioOnly, router]);
-
 	useEffect(() => {
 		if (!url || !formatId) {
 			router.push('/');
@@ -175,14 +106,6 @@ export default function DownloadPage() {
 	return (
 		<div className='min-h-screen bg-gray-50 dark:bg-gray-900 p-4'>
 			<div className='max-w-2xl mx-auto'>
-				{/* <button
-					onClick={() => router.back()}
-					className='mb-6 flex items-center text-blue-600 dark:text-blue-400 hover:underline font-medium'
-				>
-					<ChevronLeft className='h-5 w-5' />
-					Back
-				</button> */}
-
 				<div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden'>
 					<div className='p-6'>
 						<h1 className='text-2xl font-bold text-gray-900 dark:text-white mb-4'>
