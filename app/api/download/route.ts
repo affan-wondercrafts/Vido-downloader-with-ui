@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { TextEncoder } from 'util';
@@ -62,17 +62,27 @@ export async function POST(request: Request) {
 		if (isAudioOnly) {
 			args.push('-f', formatId);
 		} else {
-			args.push('-f', `${formatId}+bestaudio[ext=m4a]/bestaudio`);
-			args.push('--merge-output-format', 'mp4');
+			if (url.includes('tiktok.com')) {
+				args.push(
+					'--socket-timeout',
+					'60',
+					'--no-check-certificates',
+					'-f',
+					formatId,
+				);
+			} else {
+				args.push('-f', `${formatId}+bestaudio[ext=m4a]/bestaudio`);
+				args.push('--merge-output-format', 'mp4');
+			}
 		}
 
 		// Add URL at the end
 		args.push(url);
 
-		let proc: ChildProcessWithoutNullStreams;
-		for (let i = 0; i < 1; i++) {
-			proc = spawn('yt-dlp', args);
-		}
+		// let proc: ChildProcessWithoutNullStreams;
+		// for (let i = 0; i < 1; i++) {
+		const proc = spawn('yt-dlp', args);
+		// }
 		console.log('Running yt-dlp with args:', args);
 		const encoder = new TextEncoder();
 

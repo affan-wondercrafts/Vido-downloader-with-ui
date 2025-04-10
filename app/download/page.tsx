@@ -9,17 +9,7 @@ import {
 	Download,
 	AlertCircle,
 } from 'lucide-react';
-
-type DownloadProgress = {
-	percent: number;
-	totalSize: string;
-	speed: string;
-	eta: string;
-	status: string;
-	filename?: string;
-	downloadPath?: string;
-	message?: string;
-};
+import { DownloadProgress } from '../lib/definition';
 
 export default function DownloadPage() {
 	const searchParams = useSearchParams();
