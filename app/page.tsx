@@ -118,9 +118,10 @@ export default function Home() {
 						}
 					} else {
 						const formats = info.formats;
+						console.log('formats', formats);
 						for (let i = 0; i < formats.length; i++) {
 							const f = formats[i];
-							if (f.vcodec !== 'none' && f.ext && f.format_id && f.filesize) {
+							if (f.vcodec !== 'none' && f.ext && f.format_id) {
 								videoFormatMap[i] = f;
 							}
 						}
