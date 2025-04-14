@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
 	Loader2,
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { DownloadProgress } from '../lib/definition';
 
-export default function DownloadPage() {
+function DownloadPage() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 
@@ -187,3 +187,11 @@ export default function DownloadPage() {
 		</div>
 	);
 }
+
+const DownloadP = () => (
+	<Suspense fallback={<div>Loading...</div>}>
+		<DownloadPage />
+	</Suspense>
+);
+
+export default DownloadP;
