@@ -19,6 +19,8 @@ import {
 import { DownloadProgress, Format, VideoInfo } from './lib/definition';
 import { formatDuration, formatSize } from './lib/utils';
 import VideoPreview from './components/videPreview';
+// import ReactPlayer from 'react-player';
+// import Link from 'next/link';
 
 export default function Home() {
 	const [url, setUrl] = useState('');
@@ -57,7 +59,7 @@ export default function Home() {
 
 			async function fetchFormats() {
 				try {
-					const response = await fetch('/api/fetch-formats', {
+					const response = await fetch('/api/fetchFormats', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
@@ -153,6 +155,7 @@ export default function Home() {
 	};
 
 	const handleDownload = (formatId: string, isAudioOnly: boolean) => {
+		console.log('isAudioOnly', isAudioOnly);
 		setDownloading(true);
 		if (!url || !formatId) {
 			router.push('/');
@@ -204,6 +207,7 @@ export default function Home() {
 						if (line.startsWith('data: ')) {
 							try {
 								const data = JSON.parse(line.substring(6));
+								console.log('Download progress:', data);
 								setProgress(data);
 
 								if (data.status === 'error') {
@@ -223,6 +227,33 @@ export default function Home() {
 					);
 				}
 			}
+			// try {
+			// 	const response = await fetch('/api/downloadVideo', {
+			// 		method: 'POST',
+			// 		headers: {
+			// 			'Content-Type': 'application/json',
+			// 		},
+			// 		body: JSON.stringify({ url: validUrl, format: formatId }),
+			// 	});
+
+			// 	if (!response.ok) {
+			// 		throw new Error('Failed to download the video');
+			// 	}
+
+			// 	// Create a link to trigger the file download
+			// 	const blob = await response.blob();
+			// 	const downloadUrl = window.URL.createObjectURL(blob);
+			// 	const link = document.createElement('a');
+			// 	link.href = downloadUrl;
+			// 	link.download = 'video.mp4';
+			// 	link.click();
+
+			// 	setLoading(false);
+			// } catch (error) {
+			// 	console.error(error);
+			// 	setError('Error downloading video');
+			// 	setLoading(false);
+			// }
 		};
 
 		startDownload();
@@ -254,7 +285,14 @@ export default function Home() {
 					</h2>
 					<p className='mt-2 text-gray-500 dark:text-gray-400'>{fetchError}</p>
 					<button
-						onClick={() => router.push('/')}
+						onClick={() => {
+							setDownloading(false);
+							setFetching(false);
+							setUrl('');
+							setProgress(null);
+							setError(null);
+							setFetchError(null);
+						}}
 						className='mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200'
 					>
 						<ChevronLeft className='h-5 w-5' />
@@ -367,7 +405,14 @@ export default function Home() {
 			) : !downloading ? (
 				<div className='max-w-4xl mx-auto'>
 					<button
-						onClick={() => setFetching(false)}
+						onClick={() => {
+							setDownloading(false);
+							setFetching(false);
+							setUrl('');
+							setProgress(null);
+							setError(null);
+							setFetchError(null);
+						}}
 						className='mb-6 flex items-center text-blue-600 dark:text-blue-400 hover:underline font-medium'
 					>
 						<ChevronLeft className='h-5 w-5' />
@@ -550,19 +595,43 @@ export default function Home() {
 									<p className='text-gray-700 dark:text-gray-300 mb-8'>
 										Your download has been completed successfully!
 									</p>
-									<button
-										// href={progress.downloadPath}
-										onClick={() => {
-											setDownloading(false);
-											setFetching(false);
-											setUrl('');
-											setProgress(null);
-										}}
-										className='bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition inline-flex items-center gap-2'
-									>
-										{/* <Download className='h-5 w-5' /> */}
-										Back to Home
-									</button>
+									<div className='flex flex-col items-center justify-center gap-4'>
+										<a
+											href={progress.downloadPath || ''}
+											// download={progress.filename}
+											// target='_blank'
+											className='bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition inline-flex items-center gap-2'
+										>
+											<Download className='h-5 w-5' />
+											Save to Device
+										</a>
+										<video
+											src={progress.downloadPath}
+											controls
+											className='w-full max-w-md'
+										>
+											<source
+												src={progress.downloadPath}
+												type='video/mp4'
+											/>
+											Your browser does not support the video tag.
+										</video>
+										<button
+											// href={progress.downloadPath}
+											onClick={() => {
+												setDownloading(false);
+												setFetching(false);
+												// setUrl('');
+												setProgress(null);
+												setError(null);
+												setFetchError(null);
+											}}
+											className='bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition inline-flex items-center gap-2'
+										>
+											{/* <Download className='h-5 w-5' /> */}
+											Back to Home
+										</button>
+									</div>
 									<p className='text-sm text-gray-500 dark:text-gray-400 mt-4'>
 										{progress.filename}
 									</p>
