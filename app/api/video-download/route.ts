@@ -1,7 +1,5 @@
-// app/api/download/route.ts
 import { NextResponse } from 'next/server';
 
-// Set your express server URL here - this will be your Render deployment URL
 const EXPRESS_API_URL =
 	process.env.NEXT_PUBLIC_EXPRESS_API_URL || 'http://localhost:8080';
 
@@ -15,7 +13,6 @@ export async function POST(request: Request) {
 	try {
 		const body: DownloadRequest = await request.json();
 
-		// Forward the request to Express API
 		const response = await fetch(`${EXPRESS_API_URL}/api/download-video`, {
 			method: 'POST',
 			headers: {

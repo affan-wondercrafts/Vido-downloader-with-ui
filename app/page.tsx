@@ -228,36 +228,55 @@ export default function Home() {
 					);
 				}
 			}
-			// try {
-			// 	const response = await fetch('/api/downloadVideo', {
-			// 		method: 'POST',
-			// 		headers: {
-			// 			'Content-Type': 'application/json',
-			// 		},
-			// 		body: JSON.stringify({ url: validUrl, format: formatId }),
-			// 	});
-
-			// 	if (!response.ok) {
-			// 		throw new Error('Failed to download the video');
-			// 	}
-
-			// 	// Create a link to trigger the file download
-			// 	const blob = await response.blob();
-			// 	const downloadUrl = window.URL.createObjectURL(blob);
-			// 	const link = document.createElement('a');
-			// 	link.href = downloadUrl;
-			// 	link.download = 'video.mp4';
-			// 	link.click();
-
-			// 	setLoading(false);
-			// } catch (error) {
-			// 	console.error(error);
-			// 	setError('Error downloading video');
-			// 	setLoading(false);
-			// }
 		};
 
 		startDownload();
+	};
+
+	const handleDirectDownload = async (
+		formatId: string,
+		isAudioOnly: boolean,
+	) => {
+		if (!url || !formatId) {
+			router.push('/');
+			return;
+		}
+
+		const validUrl = url.includes('tiktok.com') ? url.split('?')[0] : url;
+		setLoading(true);
+		const response = await fetch('/api/direct-download', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ url: validUrl, formatId, isAudioOnly }),
+		});
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			throw new Error(errorText);
+		}
+
+		// Get the filename from Content-Disposition header
+		const contentDisposition = response.headers.get('Content-Disposition');
+		const match = contentDisposition?.match(/filename="(.+)"/);
+		const filename = match ? match[1] : 'download.mp4';
+
+		// Create a Blob URL and force download
+		const blob = await response.blob();
+		const blobUrl = URL.createObjectURL(blob);
+		console.log('response blob', blob);
+		console.log('blobUrl', blobUrl);
+		const fileSize = blob.size;
+		console.log('fileSize', fileSize);
+
+		const a = document.createElement('a');
+		a.href = blobUrl;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+
+		URL.revokeObjectURL(blobUrl);
+		setLoading(false);
 	};
 
 	if (fetchLoading) {
@@ -477,13 +496,32 @@ export default function Home() {
 
 														<button
 															onClick={() =>
+																handleDirectDownload(format.format_id, false)
+															}
+															className='flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition'
+														>
+															{loading ? (
+																<>
+																	<Loader2 className='h-5 w-5 animate-spin' />
+																	Processing...
+																</>
+															) : (
+																<>
+																	<Download className='h-4 w-4' />
+																	Direct Download
+																</>
+															)}
+														</button>
+														{/*
+														<button
+															onClick={() =>
 																handleDownload(format.format_id, false)
 															}
 															className='flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition'
 														>
 															<Download className='h-4 w-4' />
 															Download
-														</button>
+														</button> */}
 													</div>
 												))}
 										</div>

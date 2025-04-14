@@ -1,7 +1,5 @@
-// app/api/fetch-formats/route.ts
 import { NextResponse } from 'next/server';
 
-// Set your express server URL here - this will be your Render deployment URL
 const EXPRESS_API_URL =
 	process.env.NEXT_PUBLIC_EXPRESS_API_URL || 'http://localhost:8080';
 
